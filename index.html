@@ -175,6 +175,13 @@ footer a:hover{color:var(--gold);transform:translateX(5px)}
 
 .locbar{background:#fff;border-radius:14px;padding:12px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;box-shadow:0 2px 10px #1b174012;font-size:.92rem}.locbar .chip{padding:4px 12px;font-size:.85rem}
 .nh{padding:28px 26px 6px}.nh h2{font-size:1.5rem}.nl2{padding:10px 26px 26px;display:grid;gap:10px}.nrow{display:flex;gap:14px;align-items:center;background:var(--bg);border-radius:14px;padding:10px 12px;cursor:pointer;transition:.25s}.nrow:hover{transform:translateX(6px);background:#fff;box-shadow:0 6px 18px #1b17401f}.nrow .th{width:52px;height:64px;border-radius:10px;background-size:cover;background-position:center;flex:none;display:grid;place-items:center;color:#fff;font:bold 1rem Georgia,serif}.nrow>div:nth-child(2){flex:1}.nrow b{display:block}
+.heart{position:absolute;top:10px;right:10px;z-index:2;width:34px;height:34px;border-radius:50%;border:0;background:#fffe;color:#b5b1c8;transition:.25s}.heart:hover{transform:scale(1.2)}.heart.on{color:var(--rose)}
+.fpanel{display:flex;gap:12px;flex-wrap:wrap;align-items:end;background:#fff;border-radius:14px;padding:14px 16px;margin:-8px 0 20px;box-shadow:0 2px 10px #1b174012;animation:rise .3s var(--ease)}.fpanel label{display:grid;gap:3px;font-size:.8rem;font-weight:600}.fpanel input,.fpanel select{padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;width:118px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}a.chip{text-decoration:none;display:inline-block}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.day{border:1px solid var(--line);background:#fff;border-radius:10px;padding:3px 0;display:grid;font-size:.68rem;transition:.2s}.day b{font-size:.92rem}.day:not(:disabled):hover{border-color:var(--rose)}.day.off{background:#eee;color:#aaa;text-decoration:line-through}.day.sel{background:var(--rose);color:#fff;border-color:var(--rose)}
+.chat{display:grid;grid-template-columns:280px 1fr;gap:16px;align-items:start}.msgs{height:360px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:10px 4px}.bub{max-width:75%;padding:9px 14px;border-radius:16px;background:var(--bg);align-self:flex-start;animation:rise .3s var(--ease)}.bub.me{background:var(--ink);color:#fff;align-self:flex-end}.cf{display:flex;gap:8px;margin-top:10px}.cf input{flex:1;padding:11px 16px;border:1.5px solid var(--line);border-radius:40px;outline:0}.cf input:focus{border-color:var(--rose)}.nrow.sel{outline:2px solid var(--rose)}
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:35;background:#1b1740f2;backdrop-filter:blur(10px);justify-content:space-around;padding:8px 0 10px}.bnav a{color:#fff;text-decoration:none;display:grid;place-items:center;font-size:1.2rem;line-height:1.2}.bnav span{font-size:.68rem;color:#cfcbea}
+@media(max-width:760px){.bnav{display:flex}body{padding-bottom:64px}.chat{grid-template-columns:1fr}.toast{bottom:80px}}
 @media(max-width:900px){.lay{grid-template-columns:1fr}.panel{position:static;max-height:none}}
 @media(max-width:760px){.detail{grid-template-columns:1fr}.detail .pic{min-height:280px;border-radius:22px 22px 0 0}.bar{flex-wrap:wrap}.search{order:3;flex-basis:100%}.fg{grid-template-columns:1fr 1fr}.specs{grid-template-columns:1fr 1fr}.places{grid-template-columns:1fr}.gal{grid-auto-rows:110px}}
 @media(max-width:480px){.fg,.two{grid-template-columns:1fr}}
@@ -185,7 +192,9 @@ footer a:hover{color:var(--gold);transform:translateX(5px)}
 <header id="hd"><div class="bar">
   <a class="logo" href="#browse">Model<span>Mart</span></a>
   <div class="search"><input id="q" placeholder="Search name, city, category…" aria-label="Search"><button type="button" id="searchBtn">Search</button></div>
-  <button class="hbtn" id="sellBtn">Start selling</button>
+  <button class="hbtn" id="sellBtn">List yourself</button>
+  <button class="hbtn" id="msgBtn" aria-label="Messages">💬</button>
+  <button class="hbtn" id="accBtn">Log in</button>
   <button class="hbtn" id="cartBtn">Cart <b id="count">0</b></button>
 </div></header>
 
@@ -201,9 +210,11 @@ footer a:hover{color:var(--gold);transform:translateX(5px)}
       <button class="chip" data-f="profile">Models for booking</button>
       <button class="chip" data-f="product">Products</button>
       <button class="chip" id="nearBtn">📍 People near me</button>
+      <button class="chip" id="fbtn">⚙ Filters</button>
       
       <select id="sort" aria-label="Sort"><option value="feat">Featured</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="rate">Top rated</option></select>
     </div>
+    <div class="fpanel hide" id="fp"><label>Age from<input id="fa1" type="number" min="18" max="70"></label><label>Age to<input id="fa2" type="number" min="18" max="70"></label><label>Min height (cm)<input id="fh" type="number" min="140" max="210"></label><label>Max day rate ($)<input id="fp2" type="number" min="0"></label><label>Language<select id="fl"><option value="">Any</option><option>Spanish</option><option>French</option><option>Italian</option><option>Japanese</option><option>Portuguese</option><option>German</option></select></label><button class="chip" id="fclr" type="button">Clear</button></div>
     <div class="grid" id="grid"></div>
     <button class="cta more hide" id="more">Load more</button>
   </main>
@@ -217,7 +228,7 @@ footer a:hover{color:var(--gold);transform:translateX(5px)}
       <p style="margin-top:10px;font-size:.92rem;max-width:300px">A marketplace where models showcase their work, get booked, and sell their own products.</p>
       <div class="soc"><a href="#" aria-label="Instagram">IG</a><a href="#" aria-label="X">X</a><a href="#" aria-label="TikTok">TT</a><a href="#" aria-label="WhatsApp">WA</a></div></div>
     <div><h4>Marketplace</h4><a href="#browse" data-f2="profile">Book a model</a><a href="#browse" data-f2="product">Shop products</a><a href="#browse" data-f2="all">Top rated</a></div>
-    <div><h4>For models</h4><a href="#" id="fSell">Create a listing</a><a href="#">How payouts work</a><a href="#">Safety tips</a><a href="#">Help centre</a></div>
+    <div><h4>For models</h4><a href="#" id="fSell">Create a listing</a><a href="#">How payouts work</a><a href="#" data-info="safety">Safety tips</a><a href="#" data-info="terms">Terms of use</a><a href="#" data-info="privacy">Privacy policy</a></div>
     <div><h4>Get new listings</h4><p style="font-size:.9rem">New models and drops, weekly.</p><form class="nl" id="nl"><input type="email" required placeholder="you@email.com" aria-label="Email"><button>Join</button></form></div>
   </div>
   <div class="fb"><span>© 2026 ModelMart. Test prototype, no real payments.</span><span>All models listed are 18+ and verified</span><button class="top" id="topBtn">Back to top ↑</button></div>
@@ -227,6 +238,8 @@ footer a:hover{color:var(--gold);transform:translateX(5px)}
 <aside class="drawer" id="drawer" aria-label="Cart"><h2>Your cart</h2><div class="items" id="items"></div>
   <div class="foot"><div class="line"><span>Total</span><b id="total">$0</b></div><button class="cta" id="checkout">Check out</button></div></aside>
 <div class="modal" id="detailModal"><div class="box" id="detailBox"></div></div>
+<div class="modal" id="authModal"><div class="box" id="authBox" style="max-width:460px"></div></div>
+<div class="modal" id="infoModal"><div class="box" id="infoBox" style="max-width:520px"></div></div>
 <div class="modal" id="nearModal"><div class="box" id="nearBox" style="max-width:560px"></div></div>
 <div class="modal" id="payModal"><div class="box" id="payBox" style="max-width:540px"></div></div>
 <div class="modal" id="sellModal"><div class="box" style="max-width:640px">
@@ -246,6 +259,7 @@ footer a:hover{color:var(--gold);transform:translateX(5px)}
     <button class="cta" type="submit">Publish listing</button>
   </form>
 </div></div>
+<nav class="bnav"><a href="#browse">🏠<span>Home</span></a><a href="#/chat">💬<span>Chat</span></a><a href="#/me">👤<span>Account</span></a></nav>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -307,7 +321,7 @@ const hav=(a,b)=>{const r=Math.PI/180,x=Math.sin((b.lat-a.lat)*r/2)**2+Math.cos(
 function showNear(){
   const list=items.filter(i=>i.type==="profile"&&i.lat!=null).map(i=>({it:i,d:hav(me,i)})).sort((a,b)=>a.d-b.d).slice(0,6);
   $("#nearBox").innerHTML=`<button class="x" data-close aria-label="Close">✕</button><div class="nh"><h2>📍 People close by</h2><p class="sub">These are people close to your location. Tap anyone to view their profile.</p></div>
-   <div class="nl2">${list.map(({it,d})=>`<div class="nrow" data-open="${it.id}"><div class="th" style="${imgStyle(it)}">${it.img?"":initials(it.name)}</div><div><b>${esc(it.name)}</b><span class="sub">${it.age} yrs · ${esc(it.cat)}</span></div><span class="sub">${d<1?"under 1":Math.round(d)} km away</span></div>`).join("")}</div>`;
+   <div class="nl2">${list.map(({it,d})=>`<div class="nrow" data-open="${it.id}"><div class="th" style="${imgStyle(it)}">${it.img?"":initials(it.name)}</div><div><b>${esc(it.name)}</b><span class="sub">${it.age} yrs · ${esc(it.cat)}</span></div><span class="sub">${d<30?"Same city area":d<150?"Nearby region":d<600?"Within 600 km":"Far away"}</span></div>`).join("")}</div>`;
   $("#nearModal").classList.add("open");showScrim();
 }
 function locate(manual){
@@ -319,15 +333,16 @@ function locate(manual){
 /* ---------- home list ---------- */
 function render(){
   const q=$("#q").value.trim().toLowerCase(),s=$("#sort").value;
-  let list=items.filter(i=>(filter==="all"||i.type===filter)&&(!q||[i.name,i.cat,i.desc].join(" ").toLowerCase().includes(q)));
+  let list=items.filter(i=>(filter==="all"||i.type===filter)&&(!q||[i.name,i.cat,i.desc].join(" ").toLowerCase().includes(q))&&pass(i));
   if(s==="low")list.sort((a,b)=>a.price-b.price);
   if(s==="high")list.sort((a,b)=>b.price-a.price);
   if(s==="rate")list.sort((a,b)=>b.rate-a.rate);
+  if(s==="feat")list.sort((a,b)=>(b.featured?1:0)-(a.featured?1:0));
   $("#more").classList.toggle("hide",list.length<=shown);
   $("#grid").innerHTML=list.length?list.slice(0,shown).map((i,n)=>`
    <article class="card" style="--i:${n%12}">
      <div class="pic" data-open="${i.id}" role="button" tabindex="0" aria-label="View ${esc(i.name)}"><i style="${imgStyle(i)}"></i>${i.img?"":`<em>${initials(i.name)}</em>`}
-       <span class="tag">${i.type==="profile"?"Book model":"Product"}</span>
+       <span class="tag">${i.featured?"⭐ Featured":i.type==="profile"?"Book model":"Product"}</span><button class="heart${fav(i.id)?" on":""}" data-fav="${i.id}" aria-label="Save">♥</button>
        <div class="quick">${i.type==="profile"?`<span>${i.age} yrs</span><span>${esc(i.height.split(" ")[0])}</span><span>${esc(i.born)}</span>`:`<span>${i.stock} in stock</span>`}</div></div>
      <div class="info"><h3 data-open="${i.id}">${esc(i.name)}</h3>
        <span class="sub">${esc(i.cat)}${i.type==="product"?" · by "+esc(i.seller):" · "+i.exp+" yrs exp."}</span>
@@ -362,20 +377,20 @@ function showPage(i){
   const places=[0,1,2,3].map(n=>EVENTS[(it.id+n*3)%EVENTS.length]);
   const tst=[0,1,2].map(n=>`<blockquote>“${QUOTES[(it.id+n)%QUOTES.length]}”<cite><span class="stars">★★★★★</span> ${CLIENTS[(it.id+n*2)%CLIENTS.length]}, ${places[n].split(" ")[0]}</cite></blockquote>`).join("");
   $("#page").innerHTML=`<div class="pg"><a class="back" href="#browse">← Back to all listings</a><div class="lay"><div>
-   <div class="sec"><div class="ph0"><h1>${esc(it.name)}</h1><span class="badge">✓ Verified · 18+</span></div>
-     <span class="stars">${stars(it.rate)}</span> <span class="sub">ID ${it.id} · ${it.rate} · ${it.jobs} bookings · ${esc(it.cat)}</span></div>
+   <div class="sec"><div class="ph0"><h1>${esc(it.name)}</h1>${it.verified===false?`<span class="badge" style="background:#fff3cd;color:#8a6d00">Verification pending</span>`:`<span class="badge">✓ Verified · 18+</span>`}</div>
+     <span class="stars">${stars(it.rate)}</span> <span class="sub">ID ${it.id} · ${it.rate} · ${it.jobs} bookings · ${esc(it.cat)}</span><div class="acts"><button class="chip" data-msg="${it.id}">💬 Message</button><button class="chip" data-fav="${it.id}">${fav(it.id)?"♥ Saved":"♡ Save"}</button><button class="chip" data-report="${it.id}">⚑ Report</button></div></div>
    <div class="sec"><h2>Portfolio</h2><div class="gal" style="${it.img?"":""}">${[0,1,2,3,4,5].map(ph).join("")}</div>
      <p class="sub" style="margin-top:8px">Image slots: replace these tiles with real photos.</p></div>
    <div class="sec"><h2>Intro video</h2><div class="vid">${it.video?(/youtube\.com\/embed|player\.vimeo/.test(it.video)?`<iframe src="${it.video}" allowfullscreen style="width:100%;height:100%;border:0"></iframe>`:`<video controls src="${it.video}"></video>`):`<button class="play" data-play aria-label="Play">▶</button>`}</div></div>
    <div class="sec"><h2>About ${esc(it.name.split(" ")[0])}</h2><p style="margin-bottom:12px">${esc(it.desc)}</p>
      <div class="specs"><div><span>Age</span><b>${it.age} years</b></div><div><span>Height</span><b>${esc(it.height)}</b></div><div><span>Country of birth</span><b>${esc(it.born)}</b></div><div><span>Experience</span><b>${it.exp} years</b></div><div><span>Languages</span><b>${esc(it.langs)}</b></div><div><span>Specialty</span><b>${esc(it.cat)}</b></div></div></div>
    <div class="sec"><h2>Places booked</h2><div class="places">${places.map((p,n)=>`<div><i>★</i><span><b>${p}</b><br><span class="sub">${2026-n-(it.id%2)}</span></span></div>`).join("")}</div></div>
-   <div class="sec"><h2>Testimonials</h2><div class="tst">${tst}</div></div>
+   <div class="sec"><h2>Testimonials</h2><div class="tst">${revHTML(it)}${tst}</div>${revForm(it)}</div>
   </div>
   <form class="panel fm" id="bk"><h2>Book ${esc(it.name.split(" ")[0])}</h2><span class="sub">Pick a package, add extras, then pay.</span>
    <h4>Package</h4>${PKG.map((p,n)=>`<label class="opt"><input type="radio" name="pk" value="${n}" ${n==1?"checked":""}><div>${p[0]}<small>${p[1]}</small></div><b>${money(it.price*p[2])}</b></label>`).join("")}
    <h4>Add-ons</h4>${ADD.map((a,n)=>`<label class="opt"><input type="checkbox" name="ad" value="${n}"><div>${a[0]}</div><b>+${money(a[1])}</b></label>`).join("")}
-   <h4>Shoot details</h4>
+   <h4>Availability: tap a free day</h4>${cal(it)}<h4>Shoot details</h4>
    <div class="two"><label>Shoot type<select name="st"><option>Fashion shoot</option><option>Runway / event</option><option>Brand ad</option><option>Portfolio shoot</option><option>Video / content</option></select></label><label>Date<input name="dt" type="date" min="${new Date().toISOString().slice(0,10)}" required></label></div>
    <div class="two"><label>Days<input name="dy" type="number" min="1" max="30" value="1" required></label><label>Venue / city<input name="vn" required></label></div>
    <h4>Your details</h4>
@@ -392,8 +407,8 @@ function showPage(i){
     return {p,days,ads,tot,now,d};
   };
   f.oninput=calc;f.onchange=calc;calc();
-  f.onsubmit=e=>{e.preventDefault();const c=calc(),v=Object.fromEntries(c.d);
-    pay({title:`${it.name} · ${c.p[0]} · ${v.dt}`,amount:c.now,rows:[["Model",it.name+" ("+it.loc+")"],["Package",c.p[0]+" × "+c.days+" day(s)"],["Add-ons",c.ads.map(a=>a[0]).join(", ")||"None"],["Shoot",v.st+" · "+v.dt],["Venue",v.vn],["Booked by",v.cn+" · "+v.ph],["Email",v.em],["Total",money(c.tot)],["Paid now",money(c.now)],["Balance",money(c.tot-c.now)]],msg:`${it.name} will confirm within 24 hours.`})};
+  f.onsubmit=e=>{e.preventDefault();const c=calc(),v=Object.fromEntries(c.d);if(!need("Log in to book"))return;if(isOff(it,v.dt))return toast("That day is not available. Pick a free day.");
+    pay({title:`${it.name} · ${c.p[0]} · ${v.dt}`,amount:c.now,rows:[["Model",it.name+" ("+it.loc+")"],["Package",c.p[0]+" × "+c.days+" day(s)"],["Add-ons",c.ads.map(a=>a[0]).join(", ")||"None"],["Shoot",v.st+" · "+v.dt],["Venue",v.vn],["Booked by",v.cn+" · "+v.ph],["Email",v.em],["Total",money(c.tot)],["Paid now",money(c.now)],["Balance",money(c.tot-c.now)]],msg:`${it.name} will confirm within 24 hours.`,done:()=>addBooking(it,v,c)})};
 }
 
 /* ---------- payment (simulated) ---------- */
@@ -422,10 +437,134 @@ function pay(o){
   $("#payModal").classList.add("open");showScrim();
 }
 
+/* ===== ACCOUNTS, CHAT, SAVED, REVIEWS, AVAILABILITY, SAFETY (demo: data stays in this browser) =====
+   Going live: replace S/save() with a backend (Supabase/Firebase) and pay() with Stripe/Paystack. */
+let S={users:[],me:null,favs:{},bookings:[],threads:{},reviews:[],blocks:{},reports:[],listings:[]},chatCur=null;
+try{Object.assign(S,JSON.parse(localStorage.getItem("mm6")||"{}"))}catch(e){}
+S.listings.forEach(l=>{items.unshift(l);id=Math.max(id,l.id+1)});
+const save=()=>{try{localStorage.setItem("mm6",JSON.stringify({...S,listings:S.listings.map(l=>({...l,video:""}))}))}catch(e){toast("Browser storage is full.")}};
+const U=()=>S.users.find(u=>u.id===S.me);
+const need=w=>U()||(authOpen(w),false);
+const fav=i=>(S.favs[S.me]||[]).includes(+i);
+const blocked=i=>(S.blocks[S.me]||[]).includes(+i);
+const goHome=()=>{$("#page").classList.add("hide");$("#home").classList.remove("hide")};
+const mdl=h=>{$("#infoBox").innerHTML=`<button class="x" data-close aria-label="Close">✕</button><div class="payw">${h}</div>`;$("#infoModal").classList.add("open");showScrim()};
+function setPage(h){$("#home").classList.add("hide");$("#page").classList.remove("hide");$("#page").innerHTML=`<div class="pg"><a class="back" href="#browse">← Back to listings</a>${h}</div>`;scrollTo(0,0)}
+function ui(){const u=U();$("#accBtn").textContent=u?"👤 "+u.name.split(" ")[0]:"Log in";$("#msgBtn").classList.toggle("hide",!u);render()}
+const nrow=it=>`<div class="nrow" data-open="${it.id}"><div class="th" style="${imgStyle(it)}">${it.img?"":initials(it.name)}</div><div><b>${esc(it.name)}</b><span class="sub">${esc(it.cat)}</span></div><span class="sub">${money(it.price)}</span></div>`;
+const INFO={
+ terms:["Terms of use","<p class=sub>Template text. Have a lawyer review it before launch.</p><p>1. You must be 18 or older.<br>2. Profiles must be real and show you.<br>3. Pay only through the site so bookings stay protected.<br>4. No harassment, illegal content or requests that make anyone uncomfortable.<br>5. Accounts that break these rules may be removed.<br>6. A 5% service fee applies to each booking.</p>"],
+ privacy:["Privacy policy","<p class=sub>Template text. Have a lawyer review it before launch.</p><p>We keep your name, email, bookings and messages to run the service. Location is used only to show people nearby, and others only see a rough area, never an exact point. You can ask for your account to be deleted at any time.</p>"],
+ safety:["Safety tips","<p>Meet in public or at a professional studio for a first shoot.<br>Bring someone with you if you can.<br>Never pay or get paid outside the site.<br>Look for the Verified badge.<br>Use Report or Block if anything feels wrong.</p>"]};
+const REPLY=["Thanks for reaching out! What dates do you have in mind?","Happy to chat. Could you send the shoot details and your budget?","Sounds good. Check my calendar for free days and send a booking request.","Hi! Thanks for the message. I'll confirm availability shortly."];
+
+/* auth */
+function authOpen(why,mode){
+  mode=mode||"in";const up=mode==="up";
+  $("#authBox").innerHTML=`<button class="x" data-close aria-label="Close">✕</button><form class="fm" id="af" style="padding:30px 26px"><h2>${up?"Create account":"Log in"}</h2>${why?`<span class="sub">${esc(why)}</span>`:""}
+  ${up?`<label>Full name<input name="name" required></label>`:""}<label>Email<input name="em" type="email" required></label><label>Password<input name="pw" type="password" minlength="6" required></label>
+  ${up?`<label>I am a<select name="role"><option value="client">Client (I book models)</option><option value="model">Model (I get booked)</option></select></label><label class="opt"><input type="checkbox" name="ok" required><div>I am 18 or older and accept the <a href="#" data-info="terms">Terms</a> and <a href="#" data-info="privacy">Privacy Policy</a></div></label>`:""}
+  <button class="cta" type="submit">${up?"Create account":"Log in"}</button>
+  <span class="sub">${up?`Have an account? <a href="#" data-auth="in">Log in</a>`:`No account? <a href="#" data-auth="up">Sign up</a>`}. Demo only: accounts live in this browser, so don't use a real password.</span></form>`;
+  $("#af").onsubmit=e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target)),em=f.em.trim().toLowerCase();
+    if(up){if(S.users.some(u=>u.em===em))return toast("That email already has an account");const u={id:"u"+Date.now(),name:f.name.trim(),em,pw:f.pw,role:f.role,verified:false};S.users.push(u);S.me=u.id}
+    else{const u=S.users.find(x=>x.em===em&&x.pw===f.pw);if(!u)return toast("Wrong email or password");S.me=u.id}
+    save();closeAll();ui();toast("Welcome, "+U().name.split(" ")[0]);if(up&&f.role==="model")setTimeout(openSell,500)};
+  $("#authModal").classList.add("open");showScrim();
+}
+
+/* filters + blocking */
+const FV=()=>({a1:+$("#fa1").value||0,a2:+$("#fa2").value||99,h:+$("#fh").value||0,p:+$("#fp2").value||1e9,l:$("#fl").value});
+function pass(i){
+  if(blocked(i.id))return false;
+  const F=FV();if(!(F.a1||F.h||F.l||F.p<1e9||F.a2<99))return true;
+  if(i.type!=="profile")return false;
+  const cm=+(i.height.match(/(\d+)\s*cm/)||[])[1]||0;
+  return i.age>=F.a1&&i.age<=F.a2&&cm>=F.h&&i.price<=F.p&&(!F.l||i.langs.includes(F.l));
+}
+
+/* availability calendar */
+const isOff=(it,d)=>it.blocked?it.blocked.includes(d):it.owner?false:(it.id*7+ +d.slice(8))%5===0;
+function cal(it,own){let h='<div class="cal">';for(let n=1;n<=28;n++){const d=new Date(Date.now()+n*864e5),k=d.toISOString().slice(0,10),off=isOff(it,k);
+  h+=`<button type="button" class="day${off?" off":""}" ${own?`data-tog="${it.id}"`:off?"disabled":""} data-day="${k}"><span>${d.toLocaleDateString("en",{weekday:"short"})}</span><b>${d.getDate()}</b></button>`}return h+"</div>"}
+
+/* bookings, reviews */
+function addBooking(it,v,c){
+  S.bookings.unshift({id:"b"+Date.now(),uid:S.me,mid:it.id,mname:it.name,owner:it.owner||null,date:v.dt,days:c.days,total:c.tot,paid:c.now,status:it.owner?"Pending":"Confirmed"});
+  (S.threads[S.me+":"+it.id]=S.threads[S.me+":"+it.id]||[]).push({me:true,txt:`Hi! I've requested a booking for ${v.dt} (${v.st}, ${c.days} day${c.days>1?"s":""}).`});save();
+}
+const stars2=n=>"★".repeat(n)+"☆".repeat(5-n);
+const revHTML=it=>S.reviews.filter(r=>r.mid===it.id).map(r=>`<blockquote>“${esc(r.txt)}”<cite><span class="stars">${stars2(r.stars)}</span> ${esc(r.name)} · completed booking</cite></blockquote>`).join("");
+function revForm(it){
+  const u=U(),ok=u&&S.bookings.some(b=>b.mid===it.id&&b.uid===u.id&&b.status==="Completed"),done=u&&S.reviews.some(r=>r.mid===it.id&&r.uid===u.id);
+  return ok&&!done?`<form class="fm" data-rev="${it.id}" style="margin-top:14px"><h4>Leave a review</h4><label>Rating<select name="s"><option value="5">★★★★★</option><option value="4">★★★★</option><option value="3">★★★</option><option value="2">★★</option><option value="1">★</option></select></label><label>Your review<textarea name="t" rows="3" required></textarea></label><button class="cta">Post review</button></form>`:`<p class="sub" style="margin-top:12px">Only clients with a completed booking can leave a review.</p>`;
+}
+function reportOpen(i){if(!need("Log in to report"))return;mdl(`<h2>Report ${esc(get(i).name)}</h2><form class="fm" data-rep="${i}" style="margin-top:12px"><label>Reason<select name="r"><option>Fake profile</option><option>Inappropriate content</option><option>Harassment</option><option>Appears under 18</option><option>Scam or payment outside the site</option><option>Other</option></select></label><label>Details<textarea name="d" rows="3"></textarea></label><button class="cta">Send report</button></form>`)}
+
+/* account page */
+const bk=b=>`<div class="rcpt"><div class="line"><b>${esc(b.mname)}</b><span class="badge">${b.status}</span></div>${L("Date",b.date+" · "+b.days+" day(s)")}${L("Paid / total",money(b.paid)+" / "+money(b.total))}<div class="acts">${b.uid===S.me?`<button class="chip" data-done="${b.id}">${b.status==="Completed"?"✓ Completed":"Mark completed (demo)"}</button><button class="chip" data-msg="${b.mid}">💬 Message</button><a class="chip" href="#/m/${b.mid}">${b.status==="Completed"?"Leave a review":"View profile"}</a>`:`<button class="chip" data-accept="${b.id}">${b.status==="Pending"?"Accept":"✓ Accepted"}</button>`}</div></div>`;
+function showMe(){
+  const u=U();if(!u){goHome();authOpen("Log in to see your account");return}
+  const mine=items.find(i=>i.owner===u.id),mb=S.bookings.filter(b=>b.uid===u.id),rq=S.bookings.filter(b=>b.owner===u.id),sv=(S.favs[u.id]||[]).map(get).filter(Boolean),bl=(S.blocks[u.id]||[]).map(get).filter(Boolean);
+  setPage(`<div class="sec"><h2>${esc(u.name)}</h2><span class="sub">${esc(u.em)} · ${u.role==="model"?"Model":"Client"} account</span><div class="acts"><button class="chip" data-out="1">Log out</button></div></div>
+  ${u.role==="model"?`<div class="sec"><h2>Your listing</h2>${mine?`${nrow(mine)}<p style="margin:10px 0">${mine.verified===false?"⏳ Not verified yet. Verified profiles get a badge.":"✓ Verified"}${mine.featured?" · ⭐ Featured":""}</p><div class="acts">${mine.verified===false?`<button class="chip" data-verify="1">Start ID verification (demo)</button>`:""}<button class="chip" data-boost="${mine.id}">⭐ Boost for $19</button></div><h4 style="margin:14px 0 6px">Your availability: tap a day to block or free it</h4>${cal(mine,true)}`:`<p style="margin-bottom:10px">You have no listing yet.</p><button class="cta" data-mk="1">Create your model profile</button>`}</div>
+  <div class="sec"><h2>Booking requests</h2>${rq.length?rq.map(bk).join(""):`<p class="sub">No requests yet.</p>`}</div>`:""}
+  <div class="sec"><h2>My bookings</h2>${mb.length?mb.map(bk).join(""):`<p class="sub">Nothing booked yet.</p>`}</div>
+  <div class="sec"><h2>Saved models</h2><div class="nl2" style="padding:0">${sv.length?sv.map(nrow).join(""):`<p class="sub">Tap ♥ on a card to save it.</p>`}</div></div>
+  ${bl.length?`<div class="sec"><h2>Blocked</h2>${bl.map(i=>`<div class="line"><span>${esc(i.name)}</span><button class="chip" data-unblock="${i.id}">Unblock</button></div>`).join("")}</div>`:""}`);
+}
+
+/* chat */
+function showChat(mid){
+  const u=U();if(!u){goHome();authOpen("Log in to message");return}
+  const k=u.id+":",keys=Object.keys(S.threads).filter(x=>x.startsWith(k)).map(x=>x.slice(k.length)).filter(m=>get(m)&&!blocked(m));
+  if(mid&&get(mid)&&!blocked(mid)&&!keys.includes(mid)){S.threads[k+mid]=[];keys.unshift(mid)}
+  const cur=keys.includes(mid)?mid:keys[0],it=cur&&get(cur),msgs=it?S.threads[k+cur]:[];chatCur=cur;
+  setPage(`<div class="chat"><div class="sec" style="padding:12px"><h2 style="font-size:1.1rem">Messages</h2>${keys.length?keys.map(m=>{const x=get(m);return `<a class="nrow${m==cur?" sel":""}" style="text-decoration:none;color:inherit;margin-top:8px" href="#/chat/${m}"><div class="th" style="${imgStyle(x)}">${x.img?"":initials(x.name)}</div><div><b>${esc(x.name)}</b></div></a>`}).join(""):`<p class="sub">No conversations yet.</p>`}</div>
+  <div class="sec">${it?`<div class="line"><b><a href="#/m/${it.id}">${esc(it.name)}</a></b><span><button class="chip" data-report="${it.id}">⚑ Report</button> <button class="chip" data-block="${it.id}">Block</button></span></div><div class="msgs">${msgs.length?msgs.map(m=>`<div class="bub${m.me?" me":""}">${esc(m.txt)}</div>`).join(""):`<p class="sub">Say hello to ${esc(it.name.split(" ")[0])}.</p>`}</div><form class="cf" id="cf"><input id="ci" placeholder="Write a message…" autocomplete="off" aria-label="Message"><button class="cta">Send</button></form><p class="sub" style="margin-top:8px">Demo: replies from sample models are automatic.</p>`:`<p class="sub">Open a model's profile and tap Message to start a chat.</p>`}</div></div>`);
+  const mb=$(".msgs");if(mb)mb.scrollTop=1e9;
+  const cf=$("#cf");if(cf){$("#ci").focus();cf.onsubmit=e=>{e.preventDefault();const v=$("#ci").value.trim();if(!v)return;msgs.push({me:true,txt:v});save();showChat(cur);
+    if(!it.owner)setTimeout(()=>{S.threads[k+cur].push({txt:REPLY[Math.floor(Math.random()*REPLY.length)]});save();if(chatCur===cur&&$(".chat"))showChat(cur)},1300)}}
+}
+
+/* listing photos persist as small images */
+function shrink(file){return new Promise(r=>{const im=new Image();im.onload=()=>{const k=Math.min(1,600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);r(c.toDataURL("image/jpeg",.8))};im.onerror=()=>r("");im.src=URL.createObjectURL(file)})}
+async function persist(it,ph){S.listings.unshift(it);if(ph&&ph.size)it.img=await shrink(ph);save();render()}
+
+/* delegated events for the new features */
+document.addEventListener("click",e=>{
+  const t=e.target,d=t.dataset,day=t.closest(".day");
+  if(d.fav){if(!need("Log in to save models"))return;const n=+d.fav,a=S.favs[S.me]||[];S.favs[S.me]=a.includes(n)?a.filter(x=>x!==n):[...a,n];save();t.classList.toggle("on");if(t.classList.contains("chip"))t.textContent=fav(n)?"♥ Saved":"♡ Save";toast(fav(n)?"Saved":"Removed from saved")}
+  if(d.msg&&need("Log in to message"))location.hash="#/chat/"+d.msg;
+  if(d.report)reportOpen(d.report);
+  if(d.info){e.preventDefault();mdl(`<h2>${INFO[d.info][0]}</h2>${INFO[d.info][1]}`)}
+  if(d.auth){e.preventDefault();authOpen("",d.auth)}
+  if(d.out){S.me=null;save();ui();location.hash="#browse";toast("Logged out")}
+  if(d.verify){const u=U(),m=items.find(i=>i.owner===u.id);u.verified=true;if(m)m.verified=true;save();toast("Demo only: marked verified. Use a service like Stripe Identity or Persona for real checks.");showMe()}
+  if(d.mk)openSell();
+  if(d.boost){const m=get(d.boost);pay({title:"Boost listing for 7 days",amount:19,rows:[["Listing",m.name],["Boost","Featured for 7 days"]],msg:"Your listing is now featured.",done:()=>{m.featured=true;save();render()}})}
+  if(d.done){S.bookings.find(b=>b.id===d.done).status="Completed";save();showMe()}
+  if(d.accept){S.bookings.find(b=>b.id===d.accept).status="Confirmed";save();showMe()}
+  if(d.unblock){S.blocks[S.me]=S.blocks[S.me].filter(x=>x!==+d.unblock);save();render();showMe()}
+  if(d.block){S.blocks[S.me]=[...(S.blocks[S.me]||[]),+d.block];save();render();toast("Blocked. They won't appear for you any more.");location.hash="#/chat"}
+  if(day){if(day.dataset.tog){const m=get(day.dataset.tog),k=day.dataset.day;m.blocked=m.blocked||[];m.blocked=m.blocked.includes(k)?m.blocked.filter(x=>x!==k):[...m.blocked,k];save();day.classList.toggle("off")}
+    else if(!day.disabled){$$(".day").forEach(x=>x.classList.remove("sel"));day.classList.add("sel");const f=$("#bk");f.dt.value=day.dataset.day;f.dispatchEvent(new Event("input"))}}
+});
+document.addEventListener("submit",e=>{
+  const f=e.target;
+  if(f.dataset.rev){e.preventDefault();S.reviews.unshift({mid:+f.dataset.rev,uid:S.me,name:U().name.split(" ")[0],stars:+f.s.value,txt:f.t.value.trim()});save();showPage(+f.dataset.rev);toast("Review posted")}
+  if(f.dataset.rep){e.preventDefault();S.reports.push({mid:+f.dataset.rep,uid:S.me,reason:f.r.value,details:f.d.value,ts:Date.now()});save();closeAll();toast("Report sent. Thank you for keeping the site safe.")}
+});
+$("#accBtn").onclick=()=>U()?location.hash="#/me":authOpen("","in");
+$("#msgBtn").onclick=()=>location.hash="#/chat";
+$("#fbtn").onclick=()=>$("#fp").classList.toggle("hide");
+$("#fp").addEventListener("input",()=>reset());
+$("#fclr").onclick=()=>{$$("#fp input").forEach(x=>x.value="");$("#fl").value="";reset()};
+
 /* ---------- routing & events ---------- */
 function route(){
   const m=location.hash.match(/^#\/m\/(\d+)/);
-  if(m&&get(m[1]))showPage(m[1]);else{$("#page").classList.add("hide");$("#home").classList.remove("hide")}
+  if(m&&get(m[1]))showPage(m[1]);else if(location.hash==="#/me")showMe();else if(location.hash.startsWith("#/chat"))showChat(location.hash.split("/")[2]);else{$("#page").classList.add("hide");$("#home").classList.remove("hide")}
   closeAll();
 }
 addEventListener("hashchange",route);
@@ -433,10 +572,10 @@ const reset=()=>{shown=12;render()};
 document.addEventListener("click",e=>{
   const t=e.target,o=t.closest("[data-open]"),bk=t.dataset.book;
   if(bk){location.hash="#/m/"+bk;return}
-  if(o){const it=get(o.dataset.open);it.type==="profile"?location.hash="#/m/"+it.id:openProduct(it.id)}
+  if(o&&!t.dataset.fav){const it=get(o.dataset.open);it.type==="profile"?location.hash="#/m/"+it.id:openProduct(it.id)}
   if(t.dataset.add)addToCart(t.dataset.add);
   if(t.dataset.rm){cart=cart.filter(c=>c.id!=t.dataset.rm);drawCart()}
-  if(t.dataset.close!==undefined||["scrim","detailModal","payModal","sellModal","nearModal"].includes(t.id))closeAll();
+  if(t.dataset.close!==undefined||["scrim","detailModal","payModal","sellModal","nearModal","authModal","infoModal"].includes(t.id))closeAll();
   if(t.dataset.f){filter=t.dataset.f;$$(".chip[data-f]").forEach(c=>c.classList.toggle("on",c===t));reset()}
   if(t.dataset.f2){filter=t.dataset.f2;$$(".chip[data-f]").forEach(c=>c.classList.toggle("on",c.dataset.f===filter));reset()}
   if(t.dataset.pm!==undefined){$$("[data-pm]").forEach(c=>c.classList.toggle("on",c===t));$$(".pm").forEach(p=>p.classList.toggle("hide",p.dataset.p!==t.dataset.pm))}
@@ -452,21 +591,21 @@ $("#checkout").onclick=()=>{
   const rows=cart.map(c=>{const it=get(c.id);return [it.name,c.qty+" × "+money(it.price)]}),amt=cart.reduce((a,c)=>a+get(c.id).price*c.qty,0);
   closeAll();pay({title:`Order · ${cart.length} item(s)`,amount:amt,rows:[...rows,["Total",money(amt)]],msg:"Sellers have been notified.",done:()=>{cart=[];drawCart()}});
 };
-const openSell=e=>{e&&e.preventDefault();$("#sellModal").classList.add("open");showScrim()};
+const openSell=e=>{e&&e.preventDefault();if(!need("Log in to create a listing"))return;$("#sellModal").classList.add("open");showScrim()};
 $("#sellBtn").onclick=openSell;$("#heroSell").onclick=openSell;$("#fSell").onclick=openSell;
 $("#ltype").onchange=e=>{const p=e.target.value==="profile";$$(".pf").forEach(x=>x.classList.toggle("hide",!p));$$(".pr").forEach(x=>x.classList.toggle("hide",p));$("#lage").required=p};
 $("#sellForm").addEventListener("submit",e=>{
   e.preventDefault();const f=new FormData(e.target),p=f.get("type")==="profile",ph=f.get("photo"),vd=f.get("video");
   if(p&&+f.get("age")<18)return toast("Models must be 18 or older");
-  items.unshift({id:id++,type:f.get("type"),name:f.get("name"),cat:p?"Model":"Product",price:+f.get("price"),unit:p?"/ day":"",rate:5,desc:f.get("desc"),age:+f.get("age"),height:f.get("height")||"—",born:f.get("born")||"—",loc:"",state:"",lat:null,lng:null,exp:+f.get("exp")||0,langs:"English",jobs:0,
+  items.unshift({id:id++,owner:S.me,verified:false,type:f.get("type"),name:f.get("name"),cat:p?"Model":"Product",price:+f.get("price"),unit:p?"/ day":"",rate:5,desc:f.get("desc"),age:+f.get("age"),height:f.get("height")||"—",born:f.get("born")||"—",loc:"",state:"",lat:null,lng:null,exp:+f.get("exp")||0,langs:"English",jobs:0,
     seller:f.get("seller")||f.get("name"),stock:+f.get("stock")||1,delivery:"7–10 days",g:grads[id%8],img:ph&&ph.size?URL.createObjectURL(ph):"",video:vd&&vd.size?URL.createObjectURL(vd):""});
-  e.target.reset();closeAll();location.hash="#browse";reset();toast("Listing published");
+  persist(items[0],ph);e.target.reset();closeAll();location.hash="#browse";reset();toast("Listing published");
 });
 $("#nl").onsubmit=e=>{e.preventDefault();e.target.reset();toast("You're on the list")};
 $("#topBtn").onclick=()=>scrollTo({top:0,behavior:"smooth"});
 addEventListener("scroll",()=>$("#hd").classList.toggle("sc",scrollY>10));
 $("#born").innerHTML=TIER1.map(c=>`<option>${c}</option>`).join("");
-render();drawCart();route();locate();
+ui();drawCart();route();locate();
 </script>
 </body>
 </html>
