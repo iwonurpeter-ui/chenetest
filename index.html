@@ -173,6 +173,8 @@ footer a:hover{color:var(--gold);transform:translateX(5px)}
 .fb{border-top:1px solid #ffffff1f;max-width:1240px;margin:auto;padding:18px 22px;display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;font-size:.84rem}
 .top{background:#ffffff14;border:0;color:#fff;border-radius:40px;padding:8px 16px;transition:.25s}.top:hover{background:var(--gold);color:var(--ink)}
 
+.locbar{background:#fff;border-radius:14px;padding:12px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;box-shadow:0 2px 10px #1b174012;font-size:.92rem}.locbar .chip{padding:4px 12px;font-size:.85rem}
+.nh{padding:28px 26px 6px}.nh h2{font-size:1.5rem}.nl2{padding:10px 26px 26px;display:grid;gap:10px}.nrow{display:flex;gap:14px;align-items:center;background:var(--bg);border-radius:14px;padding:10px 12px;cursor:pointer;transition:.25s}.nrow:hover{transform:translateX(6px);background:#fff;box-shadow:0 6px 18px #1b17401f}.nrow .th{width:52px;height:64px;border-radius:10px;background-size:cover;background-position:center;flex:none;display:grid;place-items:center;color:#fff;font:bold 1rem Georgia,serif}.nrow>div:nth-child(2){flex:1}.nrow b{display:block}
 @media(max-width:900px){.lay{grid-template-columns:1fr}.panel{position:static;max-height:none}}
 @media(max-width:760px){.detail{grid-template-columns:1fr}.detail .pic{min-height:280px;border-radius:22px 22px 0 0}.bar{flex-wrap:wrap}.search{order:3;flex-basis:100%}.fg{grid-template-columns:1fr 1fr}.specs{grid-template-columns:1fr 1fr}.places{grid-template-columns:1fr}.gal{grid-auto-rows:110px}}
 @media(max-width:480px){.fg,.two{grid-template-columns:1fr}}
@@ -198,7 +200,8 @@ footer a:hover{color:var(--gold);transform:translateX(5px)}
       <button class="chip on" data-f="all">All</button>
       <button class="chip" data-f="profile">Models for booking</button>
       <button class="chip" data-f="product">Products</button>
-      <select id="cat" aria-label="Category"><option value="">All categories</option></select>
+      <button class="chip" id="nearBtn">📍 People near me</button>
+      
       <select id="sort" aria-label="Sort"><option value="feat">Featured</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="rate">Top rated</option></select>
     </div>
     <div class="grid" id="grid"></div>
@@ -222,19 +225,20 @@ footer a:hover{color:var(--gold);transform:translateX(5px)}
 
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" aria-label="Cart"><h2>Your cart</h2><div class="items" id="items"></div>
-  <div class="foot"><div class="line"><span>Total</span><b id="total">₦0</b></div><button class="cta" id="checkout">Check out</button></div></aside>
+  <div class="foot"><div class="line"><span>Total</span><b id="total">$0</b></div><button class="cta" id="checkout">Check out</button></div></aside>
 <div class="modal" id="detailModal"><div class="box" id="detailBox"></div></div>
+<div class="modal" id="nearModal"><div class="box" id="nearBox" style="max-width:560px"></div></div>
 <div class="modal" id="payModal"><div class="box" id="payBox" style="max-width:540px"></div></div>
 <div class="modal" id="sellModal"><div class="box" style="max-width:640px">
   <button class="x" data-close aria-label="Close">✕</button>
   <form class="fm" id="sellForm" style="padding:30px 26px">
     <h2>Add a listing</h2>
     <div class="two"><label>I'm listing a<select name="type" id="ltype"><option value="profile">Model profile (bookable)</option><option value="product">Product to sell</option></select></label>
-      <label>Name / title<input name="name" required placeholder="e.g. Amara Eze"></label></div>
-    <div class="two"><label>Category<input name="cat" required placeholder="e.g. Runway, Skincare"></label>
-      <label>Price (₦) <span class="sub pf">per day</span><input name="price" type="number" min="0" required placeholder="50000"></label></div>
+      <label>Name / title<input name="name" required placeholder="e.g. Sofia Martin"></label></div>
+    <div class="two">
+      <label>Price ($) <span class="sub pf">per day</span><input name="price" type="number" min="0" required placeholder="250"></label></div>
     <div class="two pf"><label>Age (18+)<input name="age" id="lage" type="number" min="18" max="70" required placeholder="24"></label><label>Height<input name="height" placeholder="5'9&quot; / 175cm"></label>
-      <label>City<input name="loc" placeholder="Lagos"></label><label>Experience (years)<input name="exp" type="number" min="0" placeholder="3"></label></div>
+      <label>Experience (years)<input name="exp" type="number" min="0" placeholder="3"></label><label>Country of birth<select name="born" id="born"></select></label></div>
     <div class="two pr hide"><label>Seller name<input name="seller"></label><label>Stock available<input name="stock" type="number" min="1" placeholder="20"></label></div>
     <label>Photo<input name="photo" type="file" accept="image/*"></label>
     <label class="pf">Intro video (optional)<input name="video" type="file" accept="video/*"></label>
@@ -248,32 +252,48 @@ footer a:hover{color:var(--gold);transform:translateX(5px)}
 /* ---------- data (generated so the list is big) ---------- */
 const grads=[["#3a3470","#c2547a"],["#0f766e","#f5a623"],["#7c2d12","#f59e0b"],["#1e3a8a","#7dd3fc"],["#581c87","#f0abfc"],["#14532d","#a3e635"],["#831843","#fda4af"],["#334155","#94a3b8"]];
 let seed=11;const rnd=()=>(seed=seed*16807%2147483647)/2147483647;const pick=a=>a[Math.floor(rnd()*a.length)];
-const FN=["Amara","Tunde","Chidi","Halima","Ngozi","Emeka","Zainab","Bola","Kelechi","Fatima","Segun","Ife","Adaeze","Musa","Temi","Kemi","Ola","Nneka","Yusuf","Sade","Obinna","Aisha","Dami","Titi"];
-const LN=["Eze","Adeyemi","Okafor","Musa","Bello","Obi","Balogun","Nwosu","Ibrahim","Ajayi","Okoro","Lawal","Danjuma","Akpan"];
-const CITY=["Lagos","Abuja","Port Harcourt","Kano","Enugu","Ibadan","Kaduna","Calabar","Benin City","Jos","Maiduguri"];
+const FN=["Sofia","Liam","Emma","Noah","Isabella","Lucas","Mia","Ethan","Chloe","Mateo","Yuki","Hiro","Amelia","Luca","Elena","Oliver","Priya","Arjun","Aria","Leo","Camila","Kai","Zara","Max"];
+const LN=["Martin","Rossi","Garcia","Müller","Tanaka","Silva","Dubois","Johnson","Kim","Novak","Santos","Andersson","Costa","Patel"];
+const TIER1=["United States","United Kingdom","Canada","Germany","France","Italy","Japan","Australia","Netherlands","Sweden","Switzerland","Spain","South Korea","Ireland","New Zealand","Norway"];
+const PLACES=[["New York","New York","US",40.71,-74.0],["Los Angeles","California","US",34.05,-118.24],["Miami","Florida","US",25.76,-80.19],["Houston","Texas","US",29.76,-95.37],["Toronto","Ontario","Canada",43.65,-79.38],["London","England","UK",51.5,-0.12],["Manchester","England","UK",53.48,-2.24],["Paris","Île-de-France","France",48.85,2.35],["Milan","Lombardy","Italy",45.46,9.19],["Berlin","Berlin","Germany",52.52,13.4],["Madrid","Madrid","Spain",40.42,-3.7],["Dubai","Dubai","UAE",25.2,55.27],["Tokyo","Tokyo","Japan",35.68,139.69],["Seoul","Seoul","South Korea",37.57,126.98],["Sydney","New South Wales","Australia",-33.87,151.21],["São Paulo","São Paulo","Brazil",-23.55,-46.63],["Lagos","Lagos","Nigeria",6.52,3.38],["Abuja","FCT","Nigeria",9.06,7.49],["Kano","Kano","Nigeria",12.0,8.52],["Maiduguri","Borno","Nigeria",11.83,13.15],["Port Harcourt","Rivers","Nigeria",4.82,7.05],["Enugu","Enugu","Nigeria",6.45,7.5]];
 const CAT=["Runway","Commercial","Fitness","Beauty","Editorial","Lifestyle","Fashion","Hair"];
-const LANG=["English, Yoruba","English, Igbo","English, Hausa","English, Pidgin","English, French"];
-const EVENTS=["Eko Style Week","Abuja Glam Expo","Sahara Beauty Fair","Niger Delta Runway Night","Calabar Carnival Shoot","Kano Craft Festival","Naija Fitness Summit","Island Bridal Showcase"];
+const LANG=["English, Spanish","English, French","English, Italian","English, Japanese","English, Portuguese","English, German"];
+const EVENTS=["Paris Style Week","Milan Glam Expo","New York Beauty Fair","Tokyo Runway Night","Dubai Fashion Showcase","London Craft Festival","Sydney Fitness Summit","Berlin Bridal Showcase"];
 const QUOTES=["Professional, on time and great in front of the camera. Would book again.","Brought fresh ideas to our shoot and the final photos were stunning.","Easy to work with. The whole team loved her energy on set.","Delivered exactly what our brand needed, and fast too.","Great communication before the shoot and a real pro on the day."];
 const CLIENTS=["Zuri Fashion House","Lumo Cosmetics","Kora Studios","Ada & Sons","Tropik Wear","Glow Lab"];
-const PT=[["Shea Glow Body Butter","Skincare",8500],["Ankara Wrap Dress","Fashion",32000],["Signed Portfolio Print Set","Prints",12000],["Beaded Waist Chain","Accessories",6500],["Adire Tote Bag","Accessories",15000],["Hair Growth Oil","Beauty",7000],["Leather Sandals","Footwear",22000],["Black Soap Set","Skincare",5000],["Agbada Set","Fashion",65000],["Gold Hoop Earrings","Accessories",18000],["Resistance Bands Kit","Fitness",9000],["Lip Gloss Trio","Beauty",6000]];
+const PT=[["Organic Body Butter","Skincare",25],["Silk Wrap Dress","Fashion",95],["Signed Portfolio Print Set","Prints",35],["Pearl Waist Chain","Accessories",20],["Canvas Tote Bag","Accessories",40],["Hair Growth Oil","Beauty",22],["Leather Sandals","Footwear",70],["Natural Soap Set","Skincare",18],["Tailored Linen Suit","Fashion",190],["Gold Hoop Earrings","Accessories",55],["Resistance Bands Kit","Fitness",28],["Lip Gloss Trio","Beauty",19]];
 let items=[],id=1;
 for(let i=0;i<40;i++){
-  const cm=160+Math.floor(rnd()*30),n=FN[i%FN.length]+" "+pick(LN),cat=pick(CAT),city=pick(CITY);
-  items.push({id:id++,type:"profile",name:n,cat,price:30000+Math.floor(rnd()*13)*5000,unit:"/ day",rate:+(4.2+rnd()*.8).toFixed(1),age:20+Math.floor(rnd()*14),
-    height:`${Math.floor(cm/2.54/12)}'${Math.round(cm/2.54%12)}" (${cm}cm)`,loc:city,exp:1+Math.floor(rnd()*9),langs:pick(LANG),jobs:20+Math.floor(rnd()*120),
-    desc:`${cat} model based in ${city}. Comfortable with long shoots, travel and brand work. Open to fashion, beauty and lifestyle campaigns.`});
+  const cm=160+Math.floor(rnd()*30),n=FN[i%FN.length]+" "+pick(LN),cat=pick(CAT),pl=PLACES[i%PLACES.length],city=pl[0];
+  items.push({id:id++,type:"profile",name:n,cat,price:150+Math.floor(rnd()*13)*25,unit:"/ day",rate:+(4.2+rnd()*.8).toFixed(1),age:20+Math.floor(rnd()*14),
+    height:`${Math.floor(cm/2.54/12)}'${Math.round(cm/2.54%12)}" (${cm}cm)`,born:pick(TIER1),loc:city,state:pl[1],country:pl[2],lat:pl[3],lng:pl[4],exp:1+Math.floor(rnd()*9),langs:pick(LANG),jobs:20+Math.floor(rnd()*120),
+    desc:`${cat} model. Comfortable with long shoots, travel and brand work. Open to fashion, beauty and lifestyle campaigns.`});
 }
 const sellers=items.slice(0,40).map(m=>m.name);
-for(let r=0;r<2;r++)PT.forEach(([name,cat,p])=>items.push({id:id++,type:"product",name:r?name+" (Premium)":name,cat,price:p*(r?1.4:1),rate:+(4+rnd()).toFixed(1),seller:pick(sellers),stock:5+Math.floor(rnd()*80),loc:pick(CITY),delivery:pick(["2–4 days","3–5 days","4–7 days"]),desc:`${name}, made and sold directly by the model. Ships nationwide.`}));
+for(let r=0;r<2;r++)PT.forEach(([name,cat,p])=>items.push({id:id++,type:"product",name:r?name+" (Premium)":name,cat,price:p*(r?1.4:1),rate:+(4+rnd()).toFixed(1),seller:pick(sellers),stock:5+Math.floor(rnd()*80),...(q=>({loc:q[0],state:q[1],country:q[2],lat:q[3],lng:q[4]}))(pick(PLACES)),delivery:pick(["5–8 days","7–10 days","10–14 days"]),desc:`${name}, made and sold directly by the model. Ships worldwide.`}));
 items.forEach((it,i)=>it.g=grads[i%grads.length]);
 
+/* ===================== EDIT HERE =====================
+   Change any listing by its ID (shown on each model page).
+   IDs 1-40 are models, 41-64 are products. Fields you can set:
+   name, price, age, height, born (country of birth), exp (years); loc/state/country/lat/lng are only used by the "People close by" popup, langs, desc,
+   img (card photo), gallery (up to 6 photo paths/URLs),
+   video (.mp4 path/URL, or a YouTube/Vimeo EMBED link). */
+/* Example with photos and video (remove the comment marks once the files exist):
+   1:{name:"Sofia Martin",img:"photos/sofia-main.jpg",gallery:["photos/s1.jpg","photos/s2.jpg"],video:"videos/sofia.mp4"}, */
+const EDITS={
+  1:{name:"Sofia Martin",loc:"Paris"},
+  2:{name:"Liam Rossi",loc:"Milan"}
+};
+Object.entries(EDITS).forEach(([k,v])=>Object.assign(items.find(x=>x.id==k)||{},v));
+/* ================================================== */
+
 /* ---------- helpers ---------- */
-let cart=[],filter="all",shown=12;
+let cart=[],filter="all",shown=12,me=null;
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
-const naira=n=>"₦"+Math.round(n).toLocaleString("en-NG");
+const money=n=>"$"+Math.round(n).toLocaleString("en-US");
 const initials=n=>n.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
-const imgStyle=it=>it.img?`background-image:url(${it.img})`:`background:linear-gradient(160deg,${it.g[0]},${it.g[1]})`;
+const imgStyle=it=>it.img?`background-image:url('${it.img}')`:`background:linear-gradient(160deg,${it.g[0]},${it.g[1]})`;
 const stars=r=>"★".repeat(Math.round(r))+"☆".repeat(5-Math.round(r));
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const get=i=>items.find(x=>x.id==i);
@@ -281,12 +301,25 @@ const L=(a,b,c="")=>`<div class="line ${c}"><span>${a}</span><b>${esc(b)}</b></d
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),2400)}
 const showScrim=()=>$("#scrim").classList.add("open");
 function closeAll(){$$(".modal").forEach(e=>e.classList.remove("open"));$("#drawer").classList.remove("open");$("#scrim").classList.remove("open")}
-[...new Set(items.map(i=>i.cat))].sort().forEach(c=>$("#cat").insertAdjacentHTML("beforeend",`<option>${c}</option>`));
+
+/* ---------- people close by (popup only) ---------- */
+const hav=(a,b)=>{const r=Math.PI/180,x=Math.sin((b.lat-a.lat)*r/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin((b.lng-a.lng)*r/2)**2;return 12742*Math.asin(Math.sqrt(x))};
+function showNear(){
+  const list=items.filter(i=>i.type==="profile"&&i.lat!=null).map(i=>({it:i,d:hav(me,i)})).sort((a,b)=>a.d-b.d).slice(0,6);
+  $("#nearBox").innerHTML=`<button class="x" data-close aria-label="Close">✕</button><div class="nh"><h2>📍 People close by</h2><p class="sub">These are people close to your location. Tap anyone to view their profile.</p></div>
+   <div class="nl2">${list.map(({it,d})=>`<div class="nrow" data-open="${it.id}"><div class="th" style="${imgStyle(it)}">${it.img?"":initials(it.name)}</div><div><b>${esc(it.name)}</b><span class="sub">${it.age} yrs · ${esc(it.cat)}</span></div><span class="sub">${d<1?"under 1":Math.round(d)} km away</span></div>`).join("")}</div>`;
+  $("#nearModal").classList.add("open");showScrim();
+}
+function locate(manual){
+  if(!navigator.geolocation){manual&&toast("Your browser can't share location");return}
+  navigator.geolocation.getCurrentPosition(p=>{me={lat:p.coords.latitude,lng:p.coords.longitude};showNear()},
+    ()=>manual&&toast("Location is off. Allow it in your browser to see people nearby."),{timeout:10000,maximumAge:600000});
+}
 
 /* ---------- home list ---------- */
 function render(){
-  const q=$("#q").value.trim().toLowerCase(),s=$("#sort").value,c=$("#cat").value;
-  let list=items.filter(i=>(filter==="all"||i.type===filter)&&(!c||i.cat===c)&&(!q||[i.name,i.cat,i.desc,i.loc].join(" ").toLowerCase().includes(q)));
+  const q=$("#q").value.trim().toLowerCase(),s=$("#sort").value;
+  let list=items.filter(i=>(filter==="all"||i.type===filter)&&(!q||[i.name,i.cat,i.desc].join(" ").toLowerCase().includes(q)));
   if(s==="low")list.sort((a,b)=>a.price-b.price);
   if(s==="high")list.sort((a,b)=>b.price-a.price);
   if(s==="rate")list.sort((a,b)=>b.rate-a.rate);
@@ -295,11 +328,11 @@ function render(){
    <article class="card" style="--i:${n%12}">
      <div class="pic" data-open="${i.id}" role="button" tabindex="0" aria-label="View ${esc(i.name)}"><i style="${imgStyle(i)}"></i>${i.img?"":`<em>${initials(i.name)}</em>`}
        <span class="tag">${i.type==="profile"?"Book model":"Product"}</span>
-       <div class="quick">${i.type==="profile"?`<span>${i.age} yrs</span><span>${esc(i.loc)}</span><span>${esc(i.height.split(" ")[0])}</span>`:`<span>${esc(i.loc)}</span><span>${i.stock} in stock</span>`}</div></div>
+       <div class="quick">${i.type==="profile"?`<span>${i.age} yrs</span><span>${esc(i.height.split(" ")[0])}</span><span>${esc(i.born)}</span>`:`<span>${i.stock} in stock</span>`}</div></div>
      <div class="info"><h3 data-open="${i.id}">${esc(i.name)}</h3>
        <span class="sub">${esc(i.cat)}${i.type==="product"?" · by "+esc(i.seller):" · "+i.exp+" yrs exp."}</span>
        <span class="stars">${stars(i.rate)} <span class="sub">${i.rate}</span></span>
-       <div class="price">${i.type==="profile"?"from ":""}${naira(i.type==="profile"?i.price*.6:i.price)} <small>${i.unit||""}</small></div>
+       <div class="price">${i.type==="profile"?"from ":""}${money(i.type==="profile"?i.price*.6:i.price)} <small>${i.unit||""}</small></div>
        <button class="add" ${i.type==="profile"?`data-book="${i.id}">View &amp; book`:`data-add="${i.id}">Add to cart`}</button></div>
    </article>`).join(""):`<div class="empty">Nothing matches. Try another word or clear the filters.</div>`;
 }
@@ -308,40 +341,40 @@ function render(){
 function addToCart(i){const it=get(i),ex=cart.find(c=>c.id==i);ex?ex.qty++:cart.push({id:it.id,qty:1});drawCart();toast(`${it.name} added to cart`);const b=$("#count");b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop")}
 function drawCart(){
   $("#count").textContent=cart.reduce((a,c)=>a+c.qty,0);let tot=0;
-  $("#items").innerHTML=cart.length?cart.map(c=>{const it=get(c.id);tot+=it.price*c.qty;return `<div class="row"><div class="th" style="${imgStyle(it)}"></div><div>${esc(it.name)}<br><span class="sub">${c.qty} × ${naira(it.price)}</span></div><button data-rm="${c.id}" aria-label="Remove">✕</button></div>`}).join(""):`<p class="sub" style="padding:24px 0">Your cart is empty.</p>`;
-  $("#total").textContent=naira(tot);
+  $("#items").innerHTML=cart.length?cart.map(c=>{const it=get(c.id);tot+=it.price*c.qty;return `<div class="row"><div class="th" style="${imgStyle(it)}"></div><div>${esc(it.name)}<br><span class="sub">${c.qty} × ${money(it.price)}</span></div><button data-rm="${c.id}" aria-label="Remove">✕</button></div>`}).join(""):`<p class="sub" style="padding:24px 0">Your cart is empty.</p>`;
+  $("#total").textContent=money(tot);
 }
 function openProduct(i){
   const it=get(i);
   $("#detailBox").innerHTML=`<button class="x" data-close aria-label="Close">✕</button><div class="detail"><div class="pic" style="cursor:default"><i style="${imgStyle(it)}"></i>${it.img?"":`<em>${initials(it.name)}</em>`}</div>
   <div class="body"><span class="badge">✓ Verified seller</span><h2>${esc(it.name)}</h2><span class="sub">${esc(it.cat)}</span><span class="stars">${stars(it.rate)} ${it.rate}</span><p>${esc(it.desc)}</p>
-  <div class="specs" style="grid-template-columns:1fr 1fr"><div><span>Seller</span><b>${esc(it.seller)}</b></div><div><span>Ships from</span><b>${esc(it.loc)}</b></div><div><span>In stock</span><b>${it.stock}</b></div><div><span>Delivery</span><b>${it.delivery}</b></div></div>
-  <div class="price">${naira(it.price)}</div><button class="cta" data-add="${it.id}" data-close>Add to cart</button></div></div>`;
+  <div class="specs" style="grid-template-columns:1fr 1fr"><div><span>Seller</span><b>${esc(it.seller)}</b></div><div><span>Type</span><b>${esc(it.cat)}</b></div><div><span>In stock</span><b>${it.stock}</b></div><div><span>Delivery</span><b>${it.delivery}</b></div></div>
+  <div class="price">${money(it.price)}</div><button class="cta" data-add="${it.id}" data-close>Add to cart</button></div></div>`;
   $("#detailModal").classList.add("open");showScrim();
 }
 
 /* ---------- model page ---------- */
 const PKG=[["Half day","4 hours · 10 edited photos",.6],["Full day","8 hours · 30 edited photos",1],["Premium","8 hours · 2 outfit sets · 30s video clip",1.6]];
-const ADD=[["Makeup artist",15000],["Extra outfit set",10000],["Commercial usage rights",30000],["Travel outside city",25000]];
+const ADD=[["Makeup artist",60],["Extra outfit set",40],["Commercial usage rights",120],["Travel outside city",100]];
 function showPage(i){
   const it=get(i);$("#home").classList.add("hide");$("#page").classList.remove("hide");scrollTo(0,0);
-  const ph=(n)=>`<div class="ph" style="background:linear-gradient(${120+n*40}deg,${it.g[n%2]},${grads[(it.id+n)%8][1]})">${n===0&&it.img?"":"Photo "+(n+1)}</div>`;
+  const ph=n=>{const g=(it.gallery&&it.gallery[n])||(n===0&&it.img);return `<div class="ph" style="${g?`background-image:url('${g}')`:`background:linear-gradient(${120+n*40}deg,${it.g[0]},${grads[(it.id+n)%8][1]})`}">${g?"":"Photo "+(n+1)}</div>`};
   const places=[0,1,2,3].map(n=>EVENTS[(it.id+n*3)%EVENTS.length]);
   const tst=[0,1,2].map(n=>`<blockquote>“${QUOTES[(it.id+n)%QUOTES.length]}”<cite><span class="stars">★★★★★</span> ${CLIENTS[(it.id+n*2)%CLIENTS.length]}, ${places[n].split(" ")[0]}</cite></blockquote>`).join("");
   $("#page").innerHTML=`<div class="pg"><a class="back" href="#browse">← Back to all listings</a><div class="lay"><div>
    <div class="sec"><div class="ph0"><h1>${esc(it.name)}</h1><span class="badge">✓ Verified · 18+</span></div>
-     <span class="stars">${stars(it.rate)}</span> <span class="sub">${it.rate} · ${it.jobs} bookings · ${esc(it.cat)} · ${esc(it.loc)}</span></div>
+     <span class="stars">${stars(it.rate)}</span> <span class="sub">ID ${it.id} · ${it.rate} · ${it.jobs} bookings · ${esc(it.cat)}</span></div>
    <div class="sec"><h2>Portfolio</h2><div class="gal" style="${it.img?"":""}">${[0,1,2,3,4,5].map(ph).join("")}</div>
      <p class="sub" style="margin-top:8px">Image slots: replace these tiles with real photos.</p></div>
-   <div class="sec"><h2>Intro video</h2><div class="vid">${it.video?`<video controls src="${it.video}"></video>`:`<button class="play" data-play aria-label="Play">▶</button>`}</div></div>
+   <div class="sec"><h2>Intro video</h2><div class="vid">${it.video?(/youtube\.com\/embed|player\.vimeo/.test(it.video)?`<iframe src="${it.video}" allowfullscreen style="width:100%;height:100%;border:0"></iframe>`:`<video controls src="${it.video}"></video>`):`<button class="play" data-play aria-label="Play">▶</button>`}</div></div>
    <div class="sec"><h2>About ${esc(it.name.split(" ")[0])}</h2><p style="margin-bottom:12px">${esc(it.desc)}</p>
-     <div class="specs"><div><span>Age</span><b>${it.age} years</b></div><div><span>Height</span><b>${esc(it.height)}</b></div><div><span>Based in</span><b>${esc(it.loc)}</b></div><div><span>Experience</span><b>${it.exp} years</b></div><div><span>Languages</span><b>${esc(it.langs)}</b></div><div><span>Specialty</span><b>${esc(it.cat)}</b></div></div></div>
-   <div class="sec"><h2>Places booked</h2><div class="places">${places.map((p,n)=>`<div><i>★</i><span><b>${p}</b><br><span class="sub">${it.loc} · ${2026-n-(it.id%2)}</span></span></div>`).join("")}</div></div>
+     <div class="specs"><div><span>Age</span><b>${it.age} years</b></div><div><span>Height</span><b>${esc(it.height)}</b></div><div><span>Country of birth</span><b>${esc(it.born)}</b></div><div><span>Experience</span><b>${it.exp} years</b></div><div><span>Languages</span><b>${esc(it.langs)}</b></div><div><span>Specialty</span><b>${esc(it.cat)}</b></div></div></div>
+   <div class="sec"><h2>Places booked</h2><div class="places">${places.map((p,n)=>`<div><i>★</i><span><b>${p}</b><br><span class="sub">${2026-n-(it.id%2)}</span></span></div>`).join("")}</div></div>
    <div class="sec"><h2>Testimonials</h2><div class="tst">${tst}</div></div>
   </div>
   <form class="panel fm" id="bk"><h2>Book ${esc(it.name.split(" ")[0])}</h2><span class="sub">Pick a package, add extras, then pay.</span>
-   <h4>Package</h4>${PKG.map((p,n)=>`<label class="opt"><input type="radio" name="pk" value="${n}" ${n==1?"checked":""}><div>${p[0]}<small>${p[1]}</small></div><b>${naira(it.price*p[2])}</b></label>`).join("")}
-   <h4>Add-ons</h4>${ADD.map((a,n)=>`<label class="opt"><input type="checkbox" name="ad" value="${n}"><div>${a[0]}</div><b>+${naira(a[1])}</b></label>`).join("")}
+   <h4>Package</h4>${PKG.map((p,n)=>`<label class="opt"><input type="radio" name="pk" value="${n}" ${n==1?"checked":""}><div>${p[0]}<small>${p[1]}</small></div><b>${money(it.price*p[2])}</b></label>`).join("")}
+   <h4>Add-ons</h4>${ADD.map((a,n)=>`<label class="opt"><input type="checkbox" name="ad" value="${n}"><div>${a[0]}</div><b>+${money(a[1])}</b></label>`).join("")}
    <h4>Shoot details</h4>
    <div class="two"><label>Shoot type<select name="st"><option>Fashion shoot</option><option>Runway / event</option><option>Brand ad</option><option>Portfolio shoot</option><option>Video / content</option></select></label><label>Date<input name="dt" type="date" min="${new Date().toISOString().slice(0,10)}" required></label></div>
    <div class="two"><label>Days<input name="dy" type="number" min="1" max="30" value="1" required></label><label>Venue / city<input name="vn" required></label></div>
@@ -355,26 +388,26 @@ function showPage(i){
   const f=$("#bk"),calc=()=>{
     const d=new FormData(f),p=PKG[d.get("pk")],days=Math.max(1,+d.get("dy")||1),ads=d.getAll("ad").map(n=>ADD[n]);
     const sub=(it.price*p[2]+ads.reduce((a,x)=>a+x[1],0))*days,fee=sub*.05,tot=sub+fee,now=tot*d.get("dep");
-    $("#sm").innerHTML=L(p[0]+" × "+days+" day"+(days>1?"s":""),naira(it.price*p[2]*days))+(ads.length?L("Add-ons",naira(ads.reduce((a,x)=>a+x[1],0)*days)):"")+L("Service fee (5%)",naira(fee))+L("Total",naira(tot),"t")+L("Due now",naira(now));
+    $("#sm").innerHTML=L(p[0]+" × "+days+" day"+(days>1?"s":""),money(it.price*p[2]*days))+(ads.length?L("Add-ons",money(ads.reduce((a,x)=>a+x[1],0)*days)):"")+L("Service fee (5%)",money(fee))+L("Total",money(tot),"t")+L("Due now",money(now));
     return {p,days,ads,tot,now,d};
   };
   f.oninput=calc;f.onchange=calc;calc();
   f.onsubmit=e=>{e.preventDefault();const c=calc(),v=Object.fromEntries(c.d);
-    pay({title:`${it.name} · ${c.p[0]} · ${v.dt}`,amount:c.now,rows:[["Model",it.name+" ("+it.loc+")"],["Package",c.p[0]+" × "+c.days+" day(s)"],["Add-ons",c.ads.map(a=>a[0]).join(", ")||"None"],["Shoot",v.st+" · "+v.dt],["Venue",v.vn],["Booked by",v.cn+" · "+v.ph],["Email",v.em],["Total",naira(c.tot)],["Paid now",naira(c.now)],["Balance",naira(c.tot-c.now)]],msg:`${it.name} will confirm within 24 hours.`})};
+    pay({title:`${it.name} · ${c.p[0]} · ${v.dt}`,amount:c.now,rows:[["Model",it.name+" ("+it.loc+")"],["Package",c.p[0]+" × "+c.days+" day(s)"],["Add-ons",c.ads.map(a=>a[0]).join(", ")||"None"],["Shoot",v.st+" · "+v.dt],["Venue",v.vn],["Booked by",v.cn+" · "+v.ph],["Email",v.em],["Total",money(c.tot)],["Paid now",money(c.now)],["Balance",money(c.tot-c.now)]],msg:`${it.name} will confirm within 24 hours.`})};
 }
 
 /* ---------- payment (simulated) ---------- */
 function pay(o){
   $("#payBox").innerHTML=`<button class="x" data-close aria-label="Close">✕</button><div class="payw"><h2>Payment</h2><p class="sub">${esc(o.title)}</p>
-   <div class="due"><span>Amount due now</span><b>${naira(o.amount)}</b></div>
-   <div class="tabs">${["Card","Bank transfer","USSD","Wallet"].map((m,i)=>`<button type="button" class="chip${i?"":" on"}" data-pm="${i}">${m}</button>`).join("")}</div>
+   <div class="due"><span>Amount due now</span><b>${money(o.amount)}</b></div>
+   <div class="tabs">${["Card","Bank transfer","PayPal","Wallet"].map((m,i)=>`<button type="button" class="chip${i?"":" on"}" data-pm="${i}">${m}</button>`).join("")}</div>
    <form class="fm" id="pf"><div class="pm" data-p="0"><label>Card number<input id="cn" inputmode="numeric" maxlength="19" placeholder="0000 0000 0000 0000"></label>
      <div class="two"><label>Expiry<input id="ce" maxlength="5" placeholder="MM/YY"></label><label>CVV<input id="cv" maxlength="3" inputmode="numeric" placeholder="123" type="password"></label></div></div>
-    <div class="pm hide" data-p="1"><div class="rcpt">${L("Bank","Test Bank")}${L("Account no.","0123456789")}${L("Name","ModelMart Escrow")}</div><span class="sub">Transfer then tap pay. Test only.</span></div>
-    <div class="pm hide" data-p="2"><div class="rcpt">${L("Dial","*000*123#")}</div><span class="sub">Follow the prompt on your phone, then tap pay. Test only.</span></div>
-    <div class="pm hide" data-p="3"><div class="rcpt">${L("Wallet balance","₦250,000")}</div></div>
+    <div class="pm hide" data-p="1"><div class="rcpt">${L("Bank","Test Bank")}${L("IBAN","GB00 TEST 0000 0000 00")}${L("Name","ModelMart Escrow")}</div><span class="sub">Transfer then tap pay. Test only.</span></div>
+    <div class="pm hide" data-p="2"><div class="rcpt">${L("Method","PayPal (test)")}</div><span class="sub">You would be sent to PayPal to approve. Test only.</span></div>
+    <div class="pm hide" data-p="3"><div class="rcpt">${L("Wallet balance","$1,200")}</div></div>
     <p class="sub">Test mode: no money moves. Don't enter real card details.</p>
-    <button class="cta" type="submit">Pay ${naira(o.amount)}</button></form></div>`;
+    <button class="cta" type="submit">Pay ${money(o.amount)}</button></form></div>`;
   $("#cn").oninput=e=>e.target.value=e.target.value.replace(/\D/g,"").replace(/(.{4})/g,"$1 ").trim();
   $("#ce").oninput=e=>{let v=e.target.value.replace(/\D/g,"");e.target.value=v.length>2?v.slice(0,2)+"/"+v.slice(2):v};
   $("#pf").onsubmit=e=>{
@@ -403,7 +436,7 @@ document.addEventListener("click",e=>{
   if(o){const it=get(o.dataset.open);it.type==="profile"?location.hash="#/m/"+it.id:openProduct(it.id)}
   if(t.dataset.add)addToCart(t.dataset.add);
   if(t.dataset.rm){cart=cart.filter(c=>c.id!=t.dataset.rm);drawCart()}
-  if(t.dataset.close!==undefined||["scrim","detailModal","payModal","sellModal"].includes(t.id))closeAll();
+  if(t.dataset.close!==undefined||["scrim","detailModal","payModal","sellModal","nearModal"].includes(t.id))closeAll();
   if(t.dataset.f){filter=t.dataset.f;$$(".chip[data-f]").forEach(c=>c.classList.toggle("on",c===t));reset()}
   if(t.dataset.f2){filter=t.dataset.f2;$$(".chip[data-f]").forEach(c=>c.classList.toggle("on",c.dataset.f===filter));reset()}
   if(t.dataset.pm!==undefined){$$("[data-pm]").forEach(c=>c.classList.toggle("on",c===t));$$(".pm").forEach(p=>p.classList.toggle("hide",p.dataset.p!==t.dataset.pm))}
@@ -411,13 +444,13 @@ document.addEventListener("click",e=>{
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAll();if(e.key==="Enter"&&e.target.dataset.open)e.target.click()});
 $("#q").addEventListener("input",()=>{location.hash.startsWith("#/m/")&&(location.hash="#browse");reset()});
-$("#searchBtn").onclick=reset;$("#sort").onchange=reset;$("#cat").onchange=reset;
+$("#searchBtn").onclick=reset;$("#sort").onchange=reset;$("#nearBtn").onclick=()=>locate(true);
 $("#more").onclick=()=>{shown+=12;render()};
 $("#cartBtn").onclick=()=>{$("#drawer").classList.add("open");showScrim()};
 $("#checkout").onclick=()=>{
   if(!cart.length)return toast("Your cart is empty");
-  const rows=cart.map(c=>{const it=get(c.id);return [it.name,c.qty+" × "+naira(it.price)]}),amt=cart.reduce((a,c)=>a+get(c.id).price*c.qty,0);
-  closeAll();pay({title:`Order · ${cart.length} item(s)`,amount:amt,rows:[...rows,["Total",naira(amt)]],msg:"Sellers have been notified.",done:()=>{cart=[];drawCart()}});
+  const rows=cart.map(c=>{const it=get(c.id);return [it.name,c.qty+" × "+money(it.price)]}),amt=cart.reduce((a,c)=>a+get(c.id).price*c.qty,0);
+  closeAll();pay({title:`Order · ${cart.length} item(s)`,amount:amt,rows:[...rows,["Total",money(amt)]],msg:"Sellers have been notified.",done:()=>{cart=[];drawCart()}});
 };
 const openSell=e=>{e&&e.preventDefault();$("#sellModal").classList.add("open");showScrim()};
 $("#sellBtn").onclick=openSell;$("#heroSell").onclick=openSell;$("#fSell").onclick=openSell;
@@ -425,14 +458,15 @@ $("#ltype").onchange=e=>{const p=e.target.value==="profile";$$(".pf").forEach(x=
 $("#sellForm").addEventListener("submit",e=>{
   e.preventDefault();const f=new FormData(e.target),p=f.get("type")==="profile",ph=f.get("photo"),vd=f.get("video");
   if(p&&+f.get("age")<18)return toast("Models must be 18 or older");
-  items.unshift({id:id++,type:f.get("type"),name:f.get("name"),cat:f.get("cat"),price:+f.get("price"),unit:p?"/ day":"",rate:5,desc:f.get("desc"),age:+f.get("age"),height:f.get("height")||"—",loc:f.get("loc")||"Nigeria",exp:+f.get("exp")||0,langs:"English",jobs:0,
-    seller:f.get("seller")||f.get("name"),stock:+f.get("stock")||1,delivery:"3–5 days",g:grads[id%8],img:ph&&ph.size?URL.createObjectURL(ph):"",video:vd&&vd.size?URL.createObjectURL(vd):""});
+  items.unshift({id:id++,type:f.get("type"),name:f.get("name"),cat:p?"Model":"Product",price:+f.get("price"),unit:p?"/ day":"",rate:5,desc:f.get("desc"),age:+f.get("age"),height:f.get("height")||"—",born:f.get("born")||"—",loc:"",state:"",lat:null,lng:null,exp:+f.get("exp")||0,langs:"English",jobs:0,
+    seller:f.get("seller")||f.get("name"),stock:+f.get("stock")||1,delivery:"7–10 days",g:grads[id%8],img:ph&&ph.size?URL.createObjectURL(ph):"",video:vd&&vd.size?URL.createObjectURL(vd):""});
   e.target.reset();closeAll();location.hash="#browse";reset();toast("Listing published");
 });
 $("#nl").onsubmit=e=>{e.preventDefault();e.target.reset();toast("You're on the list")};
 $("#topBtn").onclick=()=>scrollTo({top:0,behavior:"smooth"});
 addEventListener("scroll",()=>$("#hd").classList.toggle("sc",scrollY>10));
-render();drawCart();route();
+$("#born").innerHTML=TIER1.map(c=>`<option>${c}</option>`).join("");
+render();drawCart();route();locate();
 </script>
 </body>
 </html>
